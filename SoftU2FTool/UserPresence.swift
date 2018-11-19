@@ -88,12 +88,7 @@ class UserPresence: NSObject {
         n.actionButtonTitle = "Approve"
         n.otherButtonTitle = "Reject"
 
-        switch _type {
-        case let .Register(facet):
-            n.informativeText = "Register with " + (facet ?? "site")
-        case let .Authenticate(facet):
-            n.informativeText = "Authenticate with " + (facet ?? "site")
-        }
+        n.informativeText = UserPresence.getNotificationText(_type)
 
         NSUserNotificationCenter.default.deliver(n)
 

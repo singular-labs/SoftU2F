@@ -147,8 +147,12 @@ class U2FAuthenticator {
 
     func handleAuthenticationRequest(_ raw: Data, cid: UInt32) throws {
         let req = try APDU.AuthenticationRequest(raw: raw)
+        
+        let facet = KnownFacets[req.applicationParameter]
+        let notification = UserPresence.Notification.Authenticate(facet: facet)
+        let prompt = UserPresence.getNotificationText(notification)
 
-        guard let reg = U2FRegistration(keyHandle: req.keyHandle, applicationParameter: req.applicationParameter) else {
+        guard let reg = U2FRegistration(keyHandle: req.keyHandle, applicationParameter: req.applicationParameter, prompt: prompt) else {
             sendError(status: .WrongData, cid: cid)
             return
         }
@@ -165,8 +169,6 @@ class U2FAuthenticator {
             return
         }
 
-        let facet = KnownFacets[req.applicationParameter]
-        let notification = UserPresence.Notification.Authenticate(facet: facet)
         let skipTUP = reg.inSEP
 
         UserPresence.test(notification, skip: skipTUP) { tupSuccess in
