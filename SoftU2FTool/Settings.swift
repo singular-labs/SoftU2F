@@ -35,4 +35,8 @@ class Settings {
     static func disableSEP() {
         UserDefaults.standard.set(false, forKey: sepEnabledKey)
     }
+
+    static func initializeSEP() {
+        UserDefaults.standard.register(defaults: [sepEnabledKey : true])
+    }
 }

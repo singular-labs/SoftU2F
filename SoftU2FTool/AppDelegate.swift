@@ -12,6 +12,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Fix up legacy keychain items.
         U2FRegistration.repair()
+        Settings.initializeSEP()
 
         if CLI(CommandLine.arguments).run() {
             quit()
