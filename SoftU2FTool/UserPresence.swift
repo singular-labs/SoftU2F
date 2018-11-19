@@ -36,7 +36,7 @@ class UserPresence: NSObject {
 
     // Display a notification, wait for the user to click it, and call the callback with `true`.
     // Calls callback with `false` if another test is done while we're waiting for this one.
-    static func test(_ type: Notification, skip skipOnce: Bool = false, with callback: @escaping Callback) {
+    static func test(_ _type: Notification, skip skipOnce: Bool = false, with callback: @escaping Callback) {
         if skip || skipOnce {
             callback(true)
         } else {
@@ -53,7 +53,7 @@ class UserPresence: NSObject {
 
             current = up
             NSUserNotificationCenter.default.delegate = up
-            up.test(type)
+            up.test(_type)
         }
     }
 
@@ -77,18 +77,18 @@ class UserPresence: NSObject {
     }
 
     // Send a notification popup to the user.
-    func test(_ type: Notification) {
-        sendNotification(type)
+    func test(_ _type: Notification) {
+        sendNotification(_type)
     }
 
     // Send a notification popup to the user.
-    func sendNotification(_ type: Notification) {
+    func sendNotification(_ _type: Notification) {
         let n = NSUserNotification()
         n.title = "Security Key Request"
         n.actionButtonTitle = "Approve"
         n.otherButtonTitle = "Reject"
 
-        switch type {
+        switch _type {
         case let .Register(facet):
             n.informativeText = "Register with " + (facet ?? "site")
         case let .Authenticate(facet):
