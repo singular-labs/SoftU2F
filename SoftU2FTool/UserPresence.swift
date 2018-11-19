@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import LocalAuthentication
 
 class UserPresence: NSObject {
     enum Notification {
@@ -54,6 +55,42 @@ class UserPresence: NSObject {
             current = up
             NSUserNotificationCenter.default.delegate = up
             up.test(_type)
+        }
+    }
+
+    // Tests that the user's biometrics match
+    static func testBiometric(_ _type: Notification, with callback: @escaping Callback) {
+        // Fail any outstanding test.
+        current?.complete(false)
+
+        let context = LAContext()
+
+        let prompt = UserPresence.getNotificationText(_type)
+
+        context.localizedFallbackTitle = ""
+
+        if #available(OSX 10.12.2, *) {
+            // Giving up checking canEvaluatePolicy, because Settings.sepEnabled checks it for us
+            context.evaluatePolicy(
+                .deviceOwnerAuthenticationWithBiometrics,
+                localizedReason: prompt) { success, error in
+
+                    if !success {
+                        print(error?.localizedDescription ?? "Failed to authenticate")
+                    }
+                    callback(success)
+            }
+        } else {
+            print("work in SEP mode on macOS<10.12.2")
+        }
+    }
+    
+    static func getNotificationText (_ notification: Notification) -> String {
+        switch notification {
+        case let .Register(facet):
+            return "Register with " + (facet ?? "site")
+        case let .Authenticate(facet):
+            return "Authenticate with " + (facet ?? "site")
         }
     }
 

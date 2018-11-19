@@ -106,7 +106,7 @@ class U2FAuthenticator {
 
         let notification = UserPresence.Notification.Register(facet: facet)
 
-        UserPresence.test(notification) { tupSuccess in
+        let callback: (Bool) -> () = { tupSuccess in
             if !tupSuccess {
                 // Send no response. Otherwise Chrome will re-prompt immediately.
                 return
@@ -142,6 +142,12 @@ class U2FAuthenticator {
             let resp = RegisterResponse(publicKey: publicKey, keyHandle: reg.keyHandle, certificate: SelfSignedCertificate.toDer(), signature: sig)
 
             self.sendMsg(msg: resp, cid: cid)
+        }
+
+        if Settings.sepEnabled {
+            UserPresence.testBiometric(notification, with: callback)
+        } else {
+            UserPresence.test(notification, with: callback)
         }
     }
 
